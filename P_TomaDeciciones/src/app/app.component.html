@@ -1,0 +1,11 @@
+<div class="header" >
+
+    <div class="logo" (click)="navigateInicio()">
+        <img   src="https://preview.redd.it/fjuxydxgk3l61.png?width=504&format=png&auto=webp&s=ac5b6a3481fda46bbc117773c4cdc2f4e4e51098">
+        <p> SIREEEA </p>
+    </div>
+
+    <button class="logout" (click)="logout()" *ngIf="loggedin()"> <i class="fa-solid fa-right-from-bracket "></i> </button>
+</div>
+
+<router-outlet></router-outlet>

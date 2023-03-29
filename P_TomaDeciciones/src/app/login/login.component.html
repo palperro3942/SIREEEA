@@ -1,0 +1,38 @@
+<div class="main">
+
+    <div class="info">
+    </div>
+
+    <form [formGroup] = "login_form" (submit) = "sendLogin()">
+
+        <div class="login">
+
+            <h2> Login </h2>
+
+            <div class="icons">
+                <button class="btn" [ngClass]="{selected: activeClass}" (click)="onClick()">
+                    <i class="fa-solid fa-chalkboard-user fa-lg"></i>
+                    <p>Profesor</p>
+                </button>
+                <button class="btn" [ngClass]="{selected: !activeClass}" (click)="onClick()">
+                    <i class="fa-solid fa-user fa-lg"></i>
+                    <p>Estudiante</p>
+                </button>
+            </div>
+
+            <div class="inputs">
+                <p> Numero de cuenta </p>
+                <input type="text" name="" id="user" formControlName = "nro_cuenta">
+            </div>
+            
+            <div class="inputs pass">
+                <p> Contraseña </p>
+                <input type="password" name="" id="pass" formControlName = "password" >
+            </div>
+
+            <button class="login_btn">
+                LOGIN
+            </button>
+        </div>
+    </form>
+</div>
