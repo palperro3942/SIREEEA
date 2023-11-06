@@ -10,7 +10,8 @@ export class AlumnoService {
 
   ///////////////////////////////////////////////////
   /////// RUTA PARA CONECTAR LA API CON EL FRONT ////
-  private urlAPI: string = 'https://api.reprobados.com/'; 
+  //RECUERDA QUE USAREMOS APIV2 PARA MIGRAR
+  private urlAPI: string = 'https://apiv2.powerhashing.io/'; 
 
   /////////////////////////////////////////////////////////////////////
   /////// METODO PARA HACER UN REFRESH A LOS DATOS SI ES NECESARIO ////
