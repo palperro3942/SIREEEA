@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Lista } from './lista.model';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Lista, chartValues } from './lista.model';
 import { Chart } from 'chart.js';
 import { AlumnoService } from 'src/app/services/alumno.service';
 import { Router } from '@angular/router';
@@ -9,21 +9,21 @@ import { Router } from '@angular/router';
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.css']
 })
-export class InicioComponent implements OnInit {
-  Listas!: any[];
-  estadoEncustas!: Array<any>;
+export class InicioComponent implements OnInit, AfterViewInit {
+  Listas: Lista[] = [];
+  estadoEncuestas!: Array<any>;
   Description: string;
 
-  public chart: any
+  public chart: any;
 
-  activo!:number;
-  reflexivo!:number;
-  sensorial!:number;
-  intuitivo!:number;
-  visual!:number;
-  verbal!:number;
-  secuencial!:number;
-  global!:number;
+  activo: number = 0;
+  reflexivo: number = 0;
+  sensorial: number = 0;
+  intuitivo: number = 0;
+  visual: number = 0;
+  verbal: number = 0;
+  secuencial: number = 0;
+  global: number = 0;
 
   constructor( private servicio: AlumnoService, private route: Router ) {
     this.Description = 'Seleccione una encuesta para ver la descripcion';
@@ -35,11 +35,10 @@ export class InicioComponent implements OnInit {
 
 
   createChart() {
-
     this.chart = new Chart("MyChart", {
       type: 'radar',
       data: {
-        labels: [ 'Activo', 'Sensorial', 'Visual', 'Secuencial', 'Reflexivo', 'Intuitivo', 'Verbal', 'Global' ],
+        labels: ['Activo', 'Sensorial', 'Visual', 'Secuencial', 'Reflexivo', 'Intuitivo', 'Verbal', 'Global'],
         datasets: [
           {
             label: 'Tu Perfil',
@@ -50,97 +49,126 @@ export class InicioComponent implements OnInit {
             pointBackgroundColor: '#2E9BEC'
           }
         ]
-      } 
-    })
-
+      },
+      options: {
+        scales: {
+            r: {
+                angleLines: {
+                    display: false
+                },
+                suggestedMin: 0,
+                suggestedMax: 10
+            }
+        }
+      }
+    });
   }
 
   ngOnInit(): void {
-    
-    this.obtenerPerfilAlumno();
     this.createChart();
     this.estadoEncuesta();
     this.obtenerEncuestas();
+  }
 
+  ngAfterViewInit() {
+    this.obtenerPerfilAlumno();
   }
 
   obtenerEncuestas() {
-
-    const id_grupo = JSON.parse(localStorage.getItem('info_alumno') || "{}")[0].id_grupo;
-    this.servicio.obtenerEncuestaAsignada (
-      id_grupo
-    ).subscribe( (data) => {
-      console.log(data);
-      this.Listas = data;
-    } )
-
+    const num_grupo = JSON.parse(localStorage.getItem('info_alumno') || "{}").grupo;
+    this.servicio.obtenerEncuestaAsignada(num_grupo).subscribe((data) => {
+      const listaModel = new Lista();
+      console.log(data)
+      listaModel.nombreProfesor = data.cuestionario.id_profesor;
+      listaModel.titulo = data.cuestionario.nombre;
+      listaModel.descripcion = data.cuestionario.descripcion;
+      listaModel.id_cuestionario = data.cuestionario.id_cuestionario;
+      this.Listas.push(listaModel);
+    });
   }
 
   obtenerPerfilAlumno() {
-
+    const chartVal = new chartValues();
     this.servicio.obtenerPerfil( 
-      JSON.parse(localStorage.getItem('info_alumno') || "{}")[0].nro_cuenta,
-    ).subscribe ( (data) => {
-      
-      console.log(data);
+      JSON.parse(localStorage.getItem('info_alumno') || "{}").nro_cuenta).subscribe((data) => {
       var element = document.getElementById('a1');
-
-      if(data[0].activo_reflexivo[data[0].activo_reflexivo.length - 1] == "A") {
-        this.activo = data[0].activo_reflexivo.slice(0, -1);
-        this.reflexivo = 0;
+      // Bloque 1
+      const valorActivoReflexivo = data[0].activo_reflexivo.slice(0, -1);
+      const letraActivoReflexivo = data[0].activo_reflexivo.slice(-1);
+      console.log(valorActivoReflexivo,letraActivoReflexivo)
+      if (letraActivoReflexivo === 'A') {
+        this.activo = valorActivoReflexivo;
         document.getElementById('a' + this.activo)!.innerHTML = "x";
-      }
-      else {
-        this.reflexivo = data[0].activo_reflexivo.slice(0, -1);
-        this.activo = 0;
+        chartVal.activo = 5 + (this.activo / 22)*10;
+        chartVal.reflexivo = 5 - (this.activo / 22)*10;
+      } else if (letraActivoReflexivo === 'B')  {
+        this.reflexivo = valorActivoReflexivo;
         document.getElementById('r' + this.reflexivo)!.innerHTML = "x";
-      }
+        chartVal.activo = 5 - (this.reflexivo / 22)*10;
+        chartVal.reflexivo = 5 + (this.reflexivo / 22)*10;
+      }console.log("valores activo: ",this.activo,"val ref: ",this.reflexivo);
 
-      if(data[0].sensorial_intuitivo[data[0].sensorial_intuitivo.length - 1] == "A") {
-        this.sensorial = data[0].sensorial_intuitivo.slice(0, -1);
-        this.intuitivo = 0;
+
+      // Bloque 2
+      const valorSensorialIntuitivo = data[0].sensorial_intuitivo.slice(0, -1);
+      const letraSensorialIntuitivo = data[0].sensorial_intuitivo.slice(-1);
+      console.log(valorSensorialIntuitivo,letraSensorialIntuitivo)
+      if (letraSensorialIntuitivo === 'A') {
+        this.sensorial = valorSensorialIntuitivo;
         document.getElementById('s' + this.sensorial)!.innerHTML = "x";
-      }
-      else {
-        this.intuitivo = data[0].sensorial_intuitivo.slice(0, -1);
-        this.secuencial = 0;
-        document.getElementById('a' + this.intuitivo)!.innerHTML = "x";
-      }
+        chartVal.sensorial = 5 + (this.sensorial / 22)*10;
+        chartVal.intuitivo = 5 - (this.sensorial / 22)*10;
+      } else if (letraSensorialIntuitivo === 'B'){
+        this.intuitivo = valorSensorialIntuitivo;
+        document.getElementById('i' + this.intuitivo)!.innerHTML = "x";
+        chartVal.sensorial = 5 - (this.intuitivo / 22)*10;
+        chartVal.intuitivo = 5 + (this.intuitivo / 22)*10;
+      }console.log("valores sens: ",this.sensorial,"val intuitivo: ",this.intuitivo)
 
-      if(data[0].visual_verbal[data[0].visual_verbal.length - 1] == "A") {
-        this.visual = data[0].visual_verbal.slice(0, -1);
-        this.verbal = 0;
+      // Bloque 3
+      const valorVisualVerbal = data[0].visual_verbal.slice(0, -1);
+      const letraVisualVerbal = data[0].visual_verbal.slice(-1);
+      console.log(valorVisualVerbal,letraVisualVerbal)
+      if (letraVisualVerbal === 'A') {
+        this.visual = valorVisualVerbal;
         document.getElementById('v' + this.visual)!.innerHTML = "x";
-      }
-      else {
-        this.verbal = data[0].visual_verbal.slice(0, -1);
-        this.visual = 0;
+        chartVal.visual = 5 + (this.visual / 22)*10;
+        chartVal.verbal = 5 - (this.visual / 22)*10;
+      } else if (letraVisualVerbal === 'B'){
+        this.verbal = valorVisualVerbal;
         document.getElementById('ve' + this.verbal)!.innerHTML = "x";
-      }
+        chartVal.visual = 5 - (this.verbal / 22)*10;
+        chartVal.verbal = 5 + (this.verbal / 22)*10;
+      }console.log("valores visual: ",this.visual,"val verbal: ",this.verbal)
 
-      if(data[0].secuencial_global[data[0].secuencial_global.length - 1] == "A") {
-        this.secuencial = data[0].secuencial_global.slice(0, -1);
-        this.global = 0;
+      // Bloque 4
+      const valorSecuencialGlobal = data[0].secuencial_global.slice(0, -1);
+      const letraSecuencialGlobal = data[0].secuencial_global.slice(-1);
+      console.log(valorSecuencialGlobal,letraSecuencialGlobal)
+      if (letraSecuencialGlobal === 'A') {
+        this.secuencial = valorSecuencialGlobal;
         document.getElementById('se' + this.secuencial)!.innerHTML = "x";
-      }
-      else {
-        this.global = data[0].secuencial_global.slice(0, -1);
-        this.secuencial = 0;
+        chartVal.secuencial = 5 + (this.secuencial / 22)*10;
+        chartVal.global = 5 - (this.secuencial / 22)*10;
+      } else if (letraSecuencialGlobal === 'B'){
+        this.global = valorSecuencialGlobal;
         document.getElementById('g' + this.global)!.innerHTML = "x";
-      }
+        chartVal.secuencial = 5 - (this.global / 22)*10;
+        chartVal.global = 5 + (this.global / 22)*10;
+      }console.log("valores secuencial: ",this.secuencial,"val global: ",this.global)
 
       this.chart.data.datasets.forEach((dataset:any) => {
-        dataset.data.push(this.activo);
-        dataset.data.push(this.sensorial);
-        dataset.data.push(this.visual);
-        dataset.data.push(this.secuencial);
-        dataset.data.push(this.reflexivo);
-        dataset.data.push(this.intuitivo);
-        dataset.data.push(this.verbal);
-        dataset.data.push(this.global);
+        dataset.data.push(chartVal.activo);
+        dataset.data.push(chartVal.sensorial);
+        dataset.data.push(chartVal.visual);
+        dataset.data.push(chartVal.secuencial);
+        dataset.data.push(chartVal.reflexivo);
+        dataset.data.push(chartVal.intuitivo);
+        dataset.data.push(chartVal.verbal);
+        dataset.data.push(chartVal.global);
       });
 
-      console.log(this.chart.data);
+      console.log("chartData",this.chart.data);
 
       this.chart.update();
 
@@ -149,22 +177,18 @@ export class InicioComponent implements OnInit {
   }
 
   estadoEncuesta() {
-    this.servicio.obtenerEstadoEncuesta (
-      {
-        nro_cuenta: JSON.parse(localStorage.getItem('info_alumno') || "{}")[0].nro_cuenta,
-        nombre_cuestionario: "inventario_de_felder"
-      }
-    ).subscribe ( (data) => {
-      console.log(data);
-      this.estadoEncustas = data; 
-    },
-    (error) => {
-      
-    } )
+    const nroCuenta = JSON.parse(localStorage.getItem('info_alumno') || "{}").nro_cuenta;
+    this.servicio.obtenerEstadoEncuesta(nroCuenta).subscribe( 
+      (data) => {
+      //console.log(data);
+      this.estadoEncuestas = data; 
+      },
+      (error) => {error} 
+      )
   }
 
   checkStatus( ) {
-    return this.estadoEncustas?.some( x => x.nro_cuenta === JSON.parse(localStorage.getItem('info_alumno') || "{}")[0].nro_cuenta);
+    return this.estadoEncuestas?.some( x => x.nro_cuenta === JSON.parse(localStorage.getItem('info_alumno') || "{}").nro_cuenta);
 
   }
 
@@ -185,7 +209,7 @@ export class InicioComponent implements OnInit {
   }
 
   cambiasTabla( event:any) {
-    console.log("entro");
+    //console.log("entro");
     event.target.classList.add("active");
     var element = document.getElementById('Grafica');
     element?.classList.remove('active');

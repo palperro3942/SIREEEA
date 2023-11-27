@@ -10,8 +10,8 @@ export class AlumnoService {
 
   ///////////////////////////////////////////////////
   /////// RUTA PARA CONECTAR LA API CON EL FRONT ////
-  //RECUERDA QUE USAREMOS APIV2 PARA MIGRAR
-  private urlAPI: string = 'https://apiv2.powerhashing.io/'; 
+  private urlAPI: string = 'https://apiv2.powerhashing.io/';
+  //private urlAPI: string = 'http://localhost:3000/'; 
 
   /////////////////////////////////////////////////////////////////////
   /////// METODO PARA HACER UN REFRESH A LOS DATOS SI ES NECESARIO ////
@@ -27,24 +27,22 @@ export class AlumnoService {
   }
 
   obtenerEncuestaAsignada( data: string ): Observable <any> {
-    return this.http.get( this.urlAPI + "alumnos/encuesta/" + data );
+    return this.http.get( this.urlAPI + "grupos/grupo/" + data );
   }
 
-  obtenerEstadoEncuesta( data: any ): Observable <any> {
-    return this.http.post( this.urlAPI + "alumnos/encuesta/status", data );
+  obtenerEstadoEncuesta(nroCuenta: number): Observable<any> {
+    return this.http.get(`${this.urlAPI}inventario-de-felder/alumno/${nroCuenta}`);
   }
 
-  
   obtenerPerfil( data:string ) : Observable <any> {
-    return this.http.get( this.urlAPI + "alumnos/perfil/" + data );
+    return this.http.get( this.urlAPI + "perfil-final-inventario-de-felder/alumno/" + data );
   }
 
   obtenerPreguntas( data:number ) : Observable <any> {
-    return this.http.get( this.urlAPI + "alumnos/preguntas/" + data );
+    return this.http.get( this.urlAPI + "preguntas/" + data );
   }
-  //FATAL: aqui estan haciendo un post para registrar los datos y nuevamente usan ese post como get ? hace que reviente el server
-  //DONDE SE UTILIZA?!
-  resultadoEncuesta( data:any, nro_cuenta: number ) : Observable <any> {
-    return this.http.post( this.urlAPI + "resultados/" + nro_cuenta + "/inventario_de_felder", data, {responseType: 'text'} );
+
+  resultadoEncuesta( data:any ) : Observable <any> {
+    return this.http.post( this.urlAPI + "inventario-de-felder/resultado-encuesta", data, {responseType: 'text'} );
   }
 }

@@ -7,7 +7,7 @@
 
         <div class="login">
 
-            <h2> Login </h2>
+            <h2> Iniciar Sesion </h2>
 
             <div class="icons">
                 <button class="btn" [ngClass]="{selected: activeClass}" (click)="onClick()">
@@ -21,13 +21,11 @@
             </div>
 
             <div class="inputs">
-                <p> Numero de cuenta </p>
-                <input type="text" name="" id="user" formControlName = "nro_cuenta">
+                <input placeholder="Numero de cuenta" type="text" name="" id="user" formControlName = "nro_cuenta">
             </div>
             
             <div class="inputs pass">
-                <p> Contraseña </p>
-                <input type="password" name="" id="pass" formControlName = "password" >
+                <input placeholder="Contraseña" type="password" name="" id="pass" formControlName = "password" >
             </div>
 
             <button class="login_btn">

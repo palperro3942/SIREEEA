@@ -31,6 +31,6 @@ app.use(router);
 app.use(function(req, res){
     res.status(404).render('Not-Found',{title:'no se encuentra la ruta'});
   });
-app.listen(PORT, ()=>{
+app.listen(3001, ()=>{
     console.log('Listo el servidor en puerto ' + PORT);
 });

@@ -38,11 +38,10 @@ export class LoginComponent implements OnInit {
       this.servicio.loginAlumno(
         { 
           nro_cuenta: this.login_form.controls['nro_cuenta'].value,
-          contraseña: this.login_form.controls['password'].value
+          password: this.login_form.controls['password'].value
         }
       ).subscribe( (data) => {
-
-        localStorage.setItem('info_alumno', JSON.stringify(data));  
+        localStorage.setItem('info_alumno', JSON.stringify(data));
         this.route.navigate(['/Inicio']);
 
       },

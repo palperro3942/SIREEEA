@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-cuestionario',
   templateUrl: './cuestionario.component.html',
-  styleUrls: ['./cuestionario.component.css']
+  styleUrls: ['./cuestionario.component.css'],
 })
 export class CuestionarioComponent implements OnInit {
 
@@ -47,12 +47,10 @@ export class CuestionarioComponent implements OnInit {
 
     this.servicio.resultadoEncuesta(
       {
-        nro_cuenta: JSON.parse(localStorage.getItem('info_alumno') || "{}")[0].nro_cuenta,
+        nro_cuenta: JSON.parse(localStorage.getItem('info_alumno') || "{}").nro_cuenta,
         respuestas_compactadas: this.respuestas_compactadas,
-        grupo: "401"//JSON.parse(localStorage.getItem('info_alumno') || "{}")[0].grupo
-        //"401" //de hecho no importa que los alumnos tengan grupo en el bd esto siempre sera 401
-      },
-      JSON.parse(localStorage.getItem('info_alumno') || "{}")[0].nro_cuenta
+        grupo: JSON.parse(localStorage.getItem('info_alumno') || "{}").grupo
+      }
     ).subscribe( data => {
       
       this.routing.navigate(['/Resultado']);
@@ -67,8 +65,5 @@ export class CuestionarioComponent implements OnInit {
         },
       });
     } )
-
   }
-  
-
 }
